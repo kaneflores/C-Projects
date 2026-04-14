@@ -6,6 +6,11 @@
 // sbrk(-x) with a negative value decrements brk by x bytes, as a result of releasing memory
 // on failutre, sbrk() returns (void*) -1.
 
+struct header_t{
+    size_t size;
+    unsigned is_free;
+    struct header_t *next;
+}
 //MALLOC*****************
 void *malloc(size_t size){
 
