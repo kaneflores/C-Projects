@@ -5,12 +5,18 @@
 // sbrk(x) with a positive value increments brk by x bytes, as a result of allocating memory
 // sbrk(-x) with a negative value decrements brk by x bytes, as a result of releasing memory
 // on failutre, sbrk() returns (void*) -1.
+typedef char ALIGN[16];
+header_t *head, *tail;
+union header {
+    struct {
+        size_t size;
+        unsigned is_free;
+        union header *next;
+    } s;
+    ALIGN stub;
+};
+typedef union header header_t;
 
-struct header_t{
-    size_t size;
-    unsigned is_free;
-    struct header_t *next;
-}
 //MALLOC*****************
 void *malloc(size_t size){
 
