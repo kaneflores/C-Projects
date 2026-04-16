@@ -19,12 +19,12 @@ typedef union header header_t;
 
 //MALLOC*****************
 void *malloc(size_t size){
-    size_t total size;
+    size_t total_size;
     void *block;
     header_t *header;
 
     
-    if (!size){
+    if (!size){ // size zero?
         return NULL;}
     pthread_mutex_lock(&global_malloc_lock);
     header = get_free_block(size);
@@ -37,7 +37,41 @@ void *malloc(size_t size){
     total_size = sizeof(header_t) + size;
     block = sbrk(total_size);
     // block = sbrk(size);
-    if (block == (void*)-1)
-        return NULL;
-    return block;
+    if (block == (void*)-1){
+        pthread_mutex_unlock(&global_malloc_lock);
+        return NULL;}
+    header = block;
+    header->s.size = size;
+    header->s.is_free = 0;
+    header->s.next = NULL;
+    if (!head){
+        head = header;
+    }
+    if (tail){
+        tail-s.next = header;
+    }
+    tail = header;
+    pthread_mutex_unlock(&global_malloc_lock);
+    return (void*)(header +1);
+}
+
+header_t *get_free_block(size_t size){
+    header_t *curr = head;
+    while(curr){
+        if (curr->s.is_free && curr ->s.size >= size){
+            return curr;
+        }
+        curr = curr->s.next;
+    }
+    return NULL;
+}
+
+void free(void *block){
+    header_t *header, *tmp;
+    void *programbreak;
+
+    if (!block){
+        return;
+    }
+    pthread_mutex_lock(&)
 }
